@@ -1,21 +1,31 @@
-# This is a basic workflow to help you get started with Actions
-name: GitHub Actions Build and Deploy Demo
+name: deploy
+
 on:
   push:
     branches:
-      - dev
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@master
+      - master
 
-    - name: Build and Deploy
-      uses: JamesIves/github-pages-deploy-action@master
-      env:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        BASE_BRANCH: dev
-        BRANCH: master
-        FOLDER: public
-        BUILD_SCRIPT: npm i -g hexo && npm install && hexo generate
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@master
+
+      - name: install
+        run: npm install
+
+      - name: build
+        run: npm run build:gh-pages
+
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v2.8.0
+        env:
+          ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          PUBLISH_BRANCH: gh-pages
+          PUBLISH_DIR: ./dist
+        with:
+          emptyCommits: false
+          username: '2022'
+          useremail: 'gxh+peko-bot@gmail.com'
